@@ -1,0 +1,29 @@
+{
+  "name": "nodejs-web-app",
+  "version": "1.0.0",
+  "description": "A simple Node.js web application for DevOps Assignment for GTS",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "mocha --exit"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "devops",
+    "GTS",
+    "assignment"
+  ],
+  "author": "Your Name",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.0"
+  },
+  "devDependencies": {
+    "chai": "^5.1.1",
+    "chai-http": "^5.0.0",
+    "jest": "^29.7.0",
+    "mocha": "^10.7.3",
+    "supertest": "^7.0.0"
+  }
+}
