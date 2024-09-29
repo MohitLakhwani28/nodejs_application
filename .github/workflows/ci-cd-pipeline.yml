@@ -50,7 +50,9 @@ jobs:
 
       # Run tests using npx to ensure local Mocha is used
       - name: Run tests
-        run: npx mocha --exit
+        run: |
+          chmod +x node_modules/.bin/mocha # Add executable permission
+          npx mocha --exit
 
   deploy:
     runs-on: ubuntu-latest
