@@ -37,10 +37,8 @@ jobs:
       # Build and push Docker image to DockerHub
       - name: Build and push Docker image
         run: |
-          TIMESTAMP=$(date +%Y%m%d%H%M%S)
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/nodejs-web-app:$TIMESTAMP .
-          docker push ${{ secrets.DOCKER_USERNAME }}/nodejs-web-app:$TIMESTAMP
-          echo "IMAGE_TAG=$TIMESTAMP" >> $GITHUB_ENV  # Save IMAGE_TAG as an environment variable
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/nodejs-web-app:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/nodejs-web-app:latest
 
   test:
     runs-on: ubuntu-latest
@@ -90,9 +88,9 @@ jobs:
         run: terraform init
         working-directory: ./terraform
 
-      # Apply Terraform configuration with image tag
+      # Apply Terraform configuration
       - name: Terraform Apply
-        run: terraform apply -var="image_tag=${{ env.IMAGE_TAG }}" -auto-approve  # Pass the image tag as a variable
+        run: terraform apply -auto-approve
         working-directory: ./terraform
 
   destroy:

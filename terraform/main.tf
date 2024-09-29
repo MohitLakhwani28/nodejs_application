@@ -122,12 +122,6 @@ resource "aws_ecs_cluster" "nodejs" {
   name = "nodejs-cluster"
 }
 
-# Variable for Image Tag
-variable "image_tag" {
-  description = "The tag for the Docker image"
-  type        = string
-}
-
 # ECS Task Definition
 resource "aws_ecs_task_definition" "nodejs" {
   family                   = "nodejs-task"
@@ -142,7 +136,7 @@ resource "aws_ecs_task_definition" "nodejs" {
   container_definitions = jsonencode([ 
     { 
       name      = "nodejs" 
-      image     = "mohitlakhwani/nodejs-web-app:${var.image_tag}"  # Use the image tag variable
+      image     = "mohitlakhwani/nodejs-web-app:latest"  # Use your Docker image here 
       essential = true 
       portMappings = [ 
         { 
@@ -280,3 +274,4 @@ resource "aws_ecs_service" "nodejs" {
     aws_lb_listener.nodejs
   ]
 }
+ 
