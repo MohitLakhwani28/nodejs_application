@@ -8,6 +8,14 @@ on:
     branches:
       - main
   workflow_dispatch:  # Allows manual triggering of destroy job
+    inputs:
+      action:
+        description: 'Select action to perform'
+        required: true
+        default: 'deploy'
+        options:
+          - deploy
+          - destroy  # Added the destroy option here
 
 jobs:
   build:
