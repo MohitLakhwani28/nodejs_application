@@ -136,7 +136,7 @@ resource "aws_ecs_task_definition" "nodejs" {
   container_definitions = jsonencode([ 
     { 
       name      = "nodejs" 
-      image     = "mohitlakhwani/nodejs-web-app:latest"  # Use your Docker image here 
+      image     = "mohitlakhwani/nodejs-web-app:${var.image_tag}"  # Updated to use dynamic image tag
       essential = true 
       portMappings = [ 
         { 
@@ -274,4 +274,9 @@ resource "aws_ecs_service" "nodejs" {
     aws_lb_listener.nodejs
   ]
 }
- 
+
+# New variable for image tag
+variable "image_tag" {
+  description = "Docker image tag (timestamp-based for each deployment)"
+  type        = string
+}
