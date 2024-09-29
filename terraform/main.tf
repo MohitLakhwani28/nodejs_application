@@ -1,3 +1,7 @@
+provider "aws" {
+  region = "ap-south-1"  # Specify your AWS region
+}
+
 # VPC
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
@@ -122,6 +126,12 @@ resource "aws_ecs_cluster" "nodejs" {
   name = "nodejs-cluster"
 }
 
+# Variable for Image Tag
+variable "image_tag" {
+  description = "The tag for the Docker image"
+  type        = string
+}
+
 # ECS Task Definition
 resource "aws_ecs_task_definition" "nodejs" {
   family                   = "nodejs-task"
@@ -136,7 +146,7 @@ resource "aws_ecs_task_definition" "nodejs" {
   container_definitions = jsonencode([ 
     { 
       name      = "nodejs" 
-      image     = "mohitlakhwani/nodejs-web-app:latest"  # Use your Docker image here 
+      image     = "mohitlakhwani/nodejs-web-app:${var.image_tag}"  # Use the image tag variable
       essential = true 
       portMappings = [ 
         { 
