@@ -19,7 +19,7 @@ app.get('/health', (req, res) => {
 // Home route
 app.get('/', (req, res) => {
   res.send(`
-    <h1>DevOps Assignment for GTS</h1>
+    <h1>DevOps Assignment for GTS hello again</h1>
     <p>Explore the available routes:</p>
     <ul>
       <li><a href="/about">About</a></li>
