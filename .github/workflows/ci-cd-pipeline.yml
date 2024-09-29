@@ -48,9 +48,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # Run tests
+      # Run tests using npx to ensure local Mocha is used
       - name: Run tests
-        run: npm test
+        run: npx mocha --exit
 
   deploy:
     runs-on: ubuntu-latest
@@ -69,12 +69,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
-      # Terraform Init
+      # Initialize Terraform
       - name: Terraform Init
         run: terraform init
         working-directory: ./terraform
 
-      # Terraform Apply
+      # Apply Terraform configuration
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: ./terraform
