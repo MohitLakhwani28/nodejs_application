@@ -1,9 +1,3 @@
-# Declare the image_tag variable
-variable "image_tag" {
-  description = "The Docker image tag to use for the ECS task."
-  type        = string
-}
-
 # VPC
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
@@ -212,7 +206,6 @@ resource "aws_lb" "main" {
 
   enable_deletion_protection = false
   enable_http2              = true
-  enable_wafv2              = false
 
   tags = {
     Name = "nodejs-lb"
@@ -230,7 +223,7 @@ resource "aws_lb_target_group" "main" {
     path                = "/health"
     interval            = 30
     timeout             = 5
-    healthy_threshold   = 2
+    healthy_threshold  = 2
     unhealthy_threshold = 2
   }
 
@@ -263,7 +256,7 @@ resource "aws_ecs_service" "nodejs" {
     security_groups  = [aws_security_group.ecs_sg.id]
     assign_public_ip = true
   }
-  
+
   depends_on = [aws_lb_listener.http]
 
   load_balancer {
@@ -276,4 +269,10 @@ resource "aws_ecs_service" "nodejs" {
 # Output Load Balancer URL
 output "load_balancer_url" {
   value = aws_lb.main.dns_name
+}
+
+# Define the variable for image_tag
+variable "image_tag" {
+  description = "Docker image tag for ECS task"
+  type        = string
 }
