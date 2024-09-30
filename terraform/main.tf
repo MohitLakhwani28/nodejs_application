@@ -136,17 +136,17 @@ resource "aws_ecs_task_definition" "nodejs" {
   container_definitions = jsonencode([ 
     { 
       name      = "nodejs" 
-      image     = "mohitlakhwani/nodejs-web-app:${var.image_tag}"  # Updated to use dynamic image tag
+      image     = "mohitlakhwani/nodejs-web-app:${var.image_tag}"  # Dynamic image tag
       essential = true 
       portMappings = [ 
         { 
-          containerPort = 3000  # Set to 3000
-          protocol      = "tcp" 
-        } 
+          containerPort = 3000
+          protocol      = "tcp"
+        }
       ] 
-      memory = 512  # Specify the memory allocated to the container 
-      cpu    = 256  # Specify the CPU units allocated to the container 
-    } 
+      memory = 512
+      cpu    = 256
+    }
   ])
 }
 
@@ -162,7 +162,7 @@ resource "aws_security_group" "lb_sg" {
   }
 
   ingress {
-    from_port   = 80  # Change to your desired port (HTTP)
+    from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
@@ -214,10 +214,11 @@ resource "aws_lb" "main" {
 
 # Target Group
 resource "aws_lb_target_group" "main" {
-  name     = "nodejs-target-group"
-  port     = 3000
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.main.id
+  name        = "nodejs-target-group"
+  port        = 3000
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip"  # Changed to "ip" for awsvpc mode
 
   health_check {
     path                = "/health"
@@ -239,7 +240,7 @@ resource "aws_lb_listener" "http" {
   protocol          = "HTTP"
 
   default_action {
-    type = "forward"
+    type             = "forward"
     target_group_arn = aws_lb_target_group.main.arn
   }
 }
