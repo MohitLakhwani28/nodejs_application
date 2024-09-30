@@ -225,6 +225,7 @@ resource "aws_lb_target_group" "nodejs" {
 
   target_type = "ip"
 
+  # Updated Health Check
   health_check {
     path                = "/health"
     interval            = 10   # Reduced interval to 10 seconds
