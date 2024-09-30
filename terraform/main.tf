@@ -162,7 +162,7 @@ resource "aws_security_group" "lb_sg" {
   }
 
   ingress {
-    from_port   = 80
+    from_port   = 80  # Change to your desired port (HTTP)
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
@@ -173,7 +173,7 @@ resource "aws_security_group" "lb_sg" {
   }
 }
 
-# Security Group for ECS Service
+# Security Group for ECS Tasks
 resource "aws_security_group" "ecs_sg" {
   vpc_id = aws_vpc.main.id
 
@@ -185,10 +185,10 @@ resource "aws_security_group" "ecs_sg" {
   }
 
   ingress {
-    from_port       = 3000
-    to_port         = 3000
-    protocol        = "tcp"
-    security_groups = [aws_security_group.lb_sg.id]  # Only allow traffic from the load balancer
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
@@ -197,19 +197,18 @@ resource "aws_security_group" "ecs_sg" {
 }
 
 # Load Balancer
-resource "aws_lb" "nodejs" {
+resource "aws_lb" "main" {
   name               = "nodejs-lb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.lb_sg.id]
-  subnets            = [
-    aws_subnet.subnet_1.id,
-    aws_subnet.subnet_2.id,
-    aws_subnet.subnet_3.id
-  ]
+  subnets            = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id, aws_subnet.subnet_3.id]
 
-  enable_deletion_protection         = false
-  enable_cross_zone_load_balancing  = true
+  enable_deletion_protection = false
+
+  enable_http2 = true
+
+  enable_wafv2 = false
 
   tags = {
     Name = "nodejs-lb"
@@ -217,33 +216,35 @@ resource "aws_lb" "nodejs" {
 }
 
 # Target Group
-resource "aws_lb_target_group" "nodejs" {
+resource "aws_lb_target_group" "main" {
   name     = "nodejs-target-group"
-  port     = 3000  # Set to 3000
+  port     = 3000
   protocol = "HTTP"
   vpc_id   = aws_vpc.main.id
 
-  target_type = "ip"
-
-  # Updated Health Check
   health_check {
     path                = "/health"
-    interval            = 10   # Reduced interval to 10 seconds
+    interval            = 30
     timeout             = 5
-    healthy_threshold   = 2
+    healthy_threshold  = 2
     unhealthy_threshold = 2
+  }
+
+  tags = {
+    Name = "nodejs-target-group"
   }
 }
 
-# Load Balancer Listener
-resource "aws_lb_listener" "nodejs" {
-  load_balancer_arn = aws_lb.nodejs.arn
+# Listener for Load Balancer
+resource "aws_lb_listener" "http" {
+  load_balancer_arn = aws_lb.main.arn
   port              = 80
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.nodejs.arn
+    type = "forward"
+
+    target_group_arn = aws_lb_target_group.main.arn
   }
 }
 
@@ -254,30 +255,22 @@ resource "aws_ecs_service" "nodejs" {
   task_definition = aws_ecs_task_definition.nodejs.arn
   desired_count   = 1
   launch_type     = "FARGATE"
-
   network_configuration {
-    subnets          = [
-      aws_subnet.subnet_1.id,
-      aws_subnet.subnet_2.id,
-      aws_subnet.subnet_3.id
-    ]
+    subnets          = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id, aws_subnet.subnet_3.id]
     security_groups  = [aws_security_group.ecs_sg.id]
     assign_public_ip = true
   }
+  
+  depends_on = [aws_lb_listener.http]
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.nodejs.arn
+    target_group_arn = aws_lb_target_group.main.arn
     container_name   = "nodejs"
-    container_port   = 3000  # Set to 3000
+    container_port   = 3000
   }
-
-  depends_on = [
-    aws_lb_listener.nodejs
-  ]
 }
 
-# New variable for image tag
-variable "image_tag" {
-  description = "Docker image tag (timestamp-based for each deployment)"
-  type        = string
+# Output Load Balancer URL
+output "load_balancer_url" {
+  value = aws_lb.main.dns_name
 }
