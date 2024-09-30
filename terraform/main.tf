@@ -136,7 +136,7 @@ resource "aws_ecs_task_definition" "nodejs" {
   container_definitions = jsonencode([ 
     { 
       name      = "nodejs" 
-      image     = "mohitlakhwani/nodejs-web-app:${var.image_tag}"  # Dynamic image tag
+      image     = "mohitlakhwani/nodejs-web-app:latest"  # Static image tag
       essential = true 
       portMappings = [ 
         { 
@@ -270,10 +270,4 @@ resource "aws_ecs_service" "nodejs" {
 # Output Load Balancer URL
 output "load_balancer_url" {
   value = aws_lb.main.dns_name
-}
-
-# Define the variable for image_tag
-variable "image_tag" {
-  description = "Docker image tag for ECS task"
-  type        = string
 }
