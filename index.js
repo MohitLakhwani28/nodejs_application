@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
 // About route
 app.get('/about', (req, res) => {
   res.json({
-    message: 'This is a Node.js web application for the DevOps Assignment for GTS , hello from about',
+    message: 'This is a Node.js web application for the DevOps Assignment for GTS , hello from about again',
     version: '1.0.0',
   });
 });
