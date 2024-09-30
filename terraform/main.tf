@@ -1,3 +1,9 @@
+# Declare the image_tag variable
+variable "image_tag" {
+  description = "The Docker image tag to use for the ECS task."
+  type        = string
+}
+
 # VPC
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
@@ -205,10 +211,8 @@ resource "aws_lb" "main" {
   subnets            = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id, aws_subnet.subnet_3.id]
 
   enable_deletion_protection = false
-
-  enable_http2 = true
-
-  enable_wafv2 = false
+  enable_http2              = true
+  enable_wafv2              = false
 
   tags = {
     Name = "nodejs-lb"
@@ -226,7 +230,7 @@ resource "aws_lb_target_group" "main" {
     path                = "/health"
     interval            = 30
     timeout             = 5
-    healthy_threshold  = 2
+    healthy_threshold   = 2
     unhealthy_threshold = 2
   }
 
@@ -243,7 +247,6 @@ resource "aws_lb_listener" "http" {
 
   default_action {
     type = "forward"
-
     target_group_arn = aws_lb_target_group.main.arn
   }
 }
