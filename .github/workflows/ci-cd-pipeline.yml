@@ -42,9 +42,32 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/nodejs-web-app:$TAG
           echo "IMAGE_TAG=$TAG" >> $GITHUB_ENV  # Save image tag to GitHub environment
 
-  deploy:
+  test:
     runs-on: ubuntu-latest
     needs: build
+    if: github.event.inputs.action != 'destroy'
+
+    steps:
+      # Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Node.js and install dependencies
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Specify the Node.js version
+
+      - name: Install dependencies
+        run: npm install
+
+      # Run tests using npm
+      - name: Run tests
+        run: npm test
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test  # Ensure tests run before deployment
     if: github.event.inputs.action != 'destroy'
 
     steps:
@@ -75,6 +98,10 @@ jobs:
     if: github.event.inputs.action == 'destroy'
     
     steps:
+      # Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       # Set up AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
