@@ -25,14 +25,11 @@ jobs:
     steps:
       # Checkout code
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Updated to v4 to avoid deprecated Node.js warning
 
       # Log in to DockerHub
       - name: Log in to DockerHub
-        uses: docker/login-action@v2.2.0
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+        uses: docker/login-action@v2.2.0  # No change needed, this will be auto-updated to Node.js 20
 
       # Build and push Docker image with timestamp tag
       - name: Build and push Docker image
@@ -50,13 +47,13 @@ jobs:
     steps:
       # Checkout code
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Updated to v4 to avoid deprecated Node.js warning
       
       # Set up Node.js and install dependencies
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v3  # Already on v3, compatible with Node.js 20
         with:
-          node-version: '20'
+          node-version: '20'  # Node.js 20 for compatibility
 
       - name: Install dependencies
         run: npm install
@@ -75,15 +72,11 @@ jobs:
     steps:
       # Checkout code
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Updated to v4 to avoid deprecated Node.js warning
 
       # Set up AWS credentials
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-south-1
+        uses: aws-actions/configure-aws-credentials@v2  # No change needed, this will be auto-updated to Node.js 20
 
       # Initialize Terraform
       - name: Terraform Init
@@ -102,15 +95,11 @@ jobs:
     steps:
       # Checkout code
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Updated to v4 to avoid deprecated Node.js warning
 
       # Set up AWS credentials
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-south-1
+        uses: aws-actions/configure-aws-credentials@v2  # No change needed, this will be auto-updated to Node.js 20
 
       # Initialize Terraform
       - name: Terraform Init
@@ -121,3 +110,4 @@ jobs:
       - name: Terraform Destroy
         run: terraform destroy -auto-approve
         working-directory: ./terraform
+x
