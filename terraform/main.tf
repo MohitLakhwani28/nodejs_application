@@ -146,6 +146,16 @@ resource "aws_ecs_task_definition" "nodejs" {
       ] 
       memory = 512
       cpu    = 256
+
+      # CloudWatch Logs Configuration
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = "/ecs/nodejs-app"
+          awslogs-region        = "ap-south-1"
+          awslogs-stream-prefix = "ecs"
+        }
+      }
     }
   ])
 }
