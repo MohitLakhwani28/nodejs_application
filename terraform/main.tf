@@ -117,6 +117,15 @@ resource "aws_iam_role" "ecs_task_role" {
   })
 }
 
+# CloudWatch Log Group
+resource "aws_cloudwatch_log_group" "ecs_log_group" {
+  name              = "/ecs/nodejs-app"
+  retention_in_days = 7
+  tags = {
+    Name = "nodejs-app-log-group"
+  }
+}
+
 # ECS Cluster
 resource "aws_ecs_cluster" "nodejs" {
   name = "nodejs-cluster"
@@ -147,11 +156,10 @@ resource "aws_ecs_task_definition" "nodejs" {
       memory = 512
       cpu    = 256
 
-      # CloudWatch Logs Configuration
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-group         = "/ecs/nodejs-app"
+          awslogs-group         = aws_cloudwatch_log_group.ecs_log_group.name
           awslogs-region        = "ap-south-1"
           awslogs-stream-prefix = "ecs"
         }
@@ -228,7 +236,7 @@ resource "aws_lb_target_group" "main" {
   port        = 3000
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
-  target_type = "ip"  # Changed to "ip" for awsvpc mode
+  target_type = "ip"
 
   health_check {
     path                = "/health"
@@ -262,6 +270,7 @@ resource "aws_ecs_service" "nodejs" {
   task_definition = aws_ecs_task_definition.nodejs.arn
   desired_count   = 1
   launch_type     = "FARGATE"
+
   network_configuration {
     subnets          = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id, aws_subnet.subnet_3.id]
     security_groups  = [aws_security_group.ecs_sg.id]
