@@ -188,7 +188,7 @@ resource "aws_security_group" "ecs_sg" {
     from_port   = 3000
     to_port     = 3000
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = [aws_security_group.lb_sg.id]  # Allow traffic from the load balancer
   }
 
   tags = {
